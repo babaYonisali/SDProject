@@ -1,21 +1,4 @@
-const users = [
-    {
-        username: 'admin',
-        password: 'admin123',
-        role: 'admin'
-    },
-    {
-        username: 'manager',
-        password: 'manager123',
-        role: 'manager'
-    },
-    {
-        username: 'applicant',
-        password: 'applicant123',
-        role: 'applicant'
-    }
-];
-
+require('dotenv').config();
 const connectDB= require("./config/db")
 const express =require('express')
 const app= express()
@@ -32,6 +15,8 @@ app.post('/login',async (req, res) => {
     if (!user) {
         return res.status(404).send("User not found");
     }
+    process.env.USERNAME = user.username;
+    process.env.ROLE = user.role;
     res.json({ username: user.username, role: user.role });
 });
 

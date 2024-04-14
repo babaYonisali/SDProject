@@ -8,5 +8,13 @@
 <body>
     <h1>Hello, Admin!</h1>
     <p>This is a basic HTML file.</p>
+    <script>
+        // Retrieve username from URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+
+        // Display username in the HTML
+        document.getElementById('username').textContent = username;
+    </script>
 </body>
 </html>
