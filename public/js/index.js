@@ -37,24 +37,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error during login:', error);
         });
 }
-function signUp(signUpInf){
-    fetch('signUp',{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(signUpInf)
-    })
-    .then(response=>{
-        if (response.status===404) {
-            console.log("user is not found")
-        }
-        return response.json();
-    })
-    .then(data)
-}
-
-
 loginForm.addEventListener('submit',event=>{
     event.preventDefault();
     const formData = new FormData(loginForm);
