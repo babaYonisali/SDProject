@@ -18,13 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data =>{
         switch (data.role) {
             case 'admin':
-                window.location.href = `/html/admin.html?username=${encodeURIComponent(username)}`;
+                window.location.href = '/html/admin.html';
                 break;
             case 'manager':
-                window.location.href = `/html/manager.html?username=${encodeURIComponent(username)}`;
+                window.location.href = '/html/manager.html';
                 break;
             case 'applicant':
-                window.location.href = `/html/applicant.html?username=${encodeURIComponent(username)}`;
+                window.location.href = '/html/applicant.html';
                 break;
             default:
                 console.error('Unknown role:', data.role);
