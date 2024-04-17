@@ -10,16 +10,15 @@ const jwksRsa=require('jwks-rsa')
 const cors= require('cors')
 app.use(express.json());
 
-const corsOptions = {
-    origin: 'http://localhost:3001',  // Adjust this to match your frontend app's URL
-    optionsSuccessStatus: 200,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,  // If your front-end needs to pass credentials
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Auth-Token']
-  };
+// const corsOptions = {
+//     origin: 'http://localhost:3001',  // Adjust this to match your frontend app's URL
+//     optionsSuccessStatus: 200,
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     credentials: true,  // If your front-end needs to pass credentials
+//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Auth-Token']
+//   };
   
-  app.use(cors(corsOptions));
-  app.options('*', cors(corsOptions));
+  app.use(cors);
 const jwtCheck = jwt({
       secret: jwksRsa.expressJwtSecret({
       cache: true,
