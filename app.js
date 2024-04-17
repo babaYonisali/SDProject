@@ -17,7 +17,7 @@ const jwtCheck = jwt({
       jwksRequestsPerMinute: 5,
       jwksUri: `https://dev-32ptb8idfvaxx33n.eu.auth0.com/.well-known/jwks.json`
     }),
-    audience: 'http://localhost:3000/',
+    audience: 'http://fundit.azurewebsites.net/',
     issuer: `https://dev-32ptb8idfvaxx33n.eu.auth0.com/`,
     algorithms: ['RS256']
   });
