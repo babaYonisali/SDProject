@@ -15,9 +15,11 @@ const corsOptions = {
     optionsSuccessStatus: 200,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,  // If your front-end needs to pass credentials
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Auth-Token']
   };
   
   app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
 const jwtCheck = jwt({
       secret: jwksRsa.expressJwtSecret({
       cache: true,
