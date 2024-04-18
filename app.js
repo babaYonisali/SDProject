@@ -11,7 +11,7 @@ const cors= require('cors')
 app.use(express.json());
 
 const corsOptions = {
-    origin: 'https://<your-azure-static-web-app-url>', // Replace with your Azure Static Web Apps URL
+    origin: 'https://brave-mushroom-0e83c5603.5.azurestaticapps.net/', // Replace with your Azure Static Web Apps URL
     optionsSuccessStatus: 200
 };
   
