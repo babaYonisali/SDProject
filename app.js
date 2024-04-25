@@ -100,6 +100,14 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Server error processing the request', error: error.message });
     }
   });
+  app.get('/viewManagerRequests', async (req, res) => {
+    try {
+      const requests = await managerRequest.find({});
+      res.status(200).send(requests);
+    } catch (error) {
+      res.status(500).send({ message: "Failed to fetch requests", error: error.message });
+    }
+  });
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
