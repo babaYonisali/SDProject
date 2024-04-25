@@ -3,6 +3,7 @@ const express =require('express')
 const app= express()
 const PORT =process.env.PORT||3000
 const User=require("./models/userModel")
+const managerRequest=require("./models/managerRequestModel")
 connectDB();
 const path = require('path');
 const {expressjwt:jwt}=require('express-jwt')
@@ -29,7 +30,7 @@ const jwtCheck = jwt({
     algorithms: ['RS256']
   });
   
-  app.use(jwtCheck);
+ app.use(jwtCheck);
 
 app.post('/login',async (req, res) => {
     const { userID } = req.body;
@@ -57,6 +58,48 @@ app.post('/signUp', async (req, res) => {
         res.status(500).json({ message: 'Error adding user', error: error.message });
     }
 });
+app.post('/managerRequest', async (req, res) => {
+    const { userID,motivation} = req.body;
+    try {
+        const existingmanagerRequest = await managerRequest.findOne({ userID });
+        if (existingmanagerRequest) {
+            return res.status(409).json({ message: 'Request already exists' });
+        }
+        await managerRequest.insertMany([req.body]);
+      res.status(201).send({ message: 'Request created successfully'});
+    } catch (error) {
+      res.status(500).send({ message: 'Failed to create request', error: error.message });
+    }
+  });
+  app.post('/process-request/:userID', async (req, res) => {
+    const { decision } = req.body;
+    const { userID } = req.params;  
+    try {
+      // Find and delete the manager request for this user
+      const request = await managerRequest.findOneAndDelete({ userID});
+  
+      if (!request) {
+        return res.status(404).send({ message: 'No request found for this user.' });
+      }
+  
+      if (decision === 'accept') {
+        // Update user role to 'manager'
+        const updatedUser = await User.findOneAndUpdate({ userID}, { role: 'manager' }, { new: true });
+  
+        if (!updatedUser) {
+          return res.status(404).send({ message: 'User not found.' });
+        }
+        res.send({ message: 'Request accepted and user role updated to manager.', user: updatedUser });
+      } else if (decision === 'reject') {
+        // Simply return a response; no change to user role
+        res.send({ message: 'Request rejected. No changes made to user role.' });
+      } else {
+        res.status(400).send({ message: 'Invalid decision. Must be "accept" or "reject".' });
+      }
+    } catch (error) {
+      res.status(500).send({ message: 'Server error processing the request', error: error.message });
+    }
+  });
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
