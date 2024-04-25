@@ -16,8 +16,12 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
   
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); 
+if (process.env.NODE_ENV !== 'test') {
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions)); 
+}
+
+
 const jwtCheck = jwt({
       secret: jwksRsa.expressJwtSecret({
       cache: true,
@@ -30,7 +34,9 @@ const jwtCheck = jwt({
     algorithms: ['RS256']
   });
   
- app.use(jwtCheck);
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(jwtCheck); // Only use JWT check outside of tests
+  }
 
 app.post('/login',async (req, res) => {
     const { userID } = req.body;
@@ -109,6 +115,11 @@ app.post('/managerRequest', async (req, res) => {
     }
   });
 
-app.listen(PORT, ()=>{
-    console.log(`Listening on port ${PORT}`)
-})
+  if (process.env.NODE_ENV !== 'test') {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`);
+    });
+}
+
+module.exports=app;
