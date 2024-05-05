@@ -108,6 +108,26 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch requests", error: error.message });
     }
   });
+  app.get('/viewUsers', async (req, res) => {
+    try {
+      const requests = await User.find({});
+      res.status(200).send(requests);
+    } catch (error) {
+      res.status(500).send({ message: "Failed to fetch requests", error: error.message });
+    }
+  });
+  app.get('/process-blockedUser/:userID', async (req, res) => {
+    const { userID } = req.params;  
+    try {
+        const updatedUser = await User.findOneAndUpdate({ userID}, { role: 'blocked' }, { new: true });
+        if (!updatedUser) {
+          return res.status(404).send({ message: 'User not found.' });
+        }
+        res.send({ message: 'User Blocked.', user: updatedUser });
+    } catch (error) {
+      res.status(500).send({ message: 'Server error processing the request', error: error.message });
+    }
+  });
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
