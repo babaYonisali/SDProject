@@ -122,6 +122,14 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch requests", error: error.message });
     }
   });
+  app.get('/viewFundOpps', async (req, res) => {
+    try {
+      const requests = await funds.find({});
+      res.status(200).send(requests);
+    } catch (error) {
+      res.status(500).send({ message: "Failed to fetch funds", error: error.message });
+    }
+  });
   app.get('/viewUsers', async (req, res) => {
     try {
       const requests = await User.find({});
