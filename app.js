@@ -4,6 +4,7 @@ const app= express()
 const PORT =process.env.PORT||3000
 const User=require("./models/userModel")
 const funds=require("./models/funds")
+const fundApplications=require("./models/fundApplications")
 const managerRequest=require("./models/managerRequestModel")
 connectDB();
 const path = require('path');
@@ -80,6 +81,19 @@ app.post('/managerRequest', async (req, res) => {
             return res.status(409).json({ message: 'Fund with this name already exists' });
         }
         await funds.insertMany([req.body]);
+      res.status(201).send({ message: 'Request created successfully'});
+    } catch (error) {
+      res.status(500).send({ message: 'Failed to create request', error: error.message });
+    }
+  });
+  app.post('/AddFundApplications', async (req, res) => {
+    const { userID,managerUserID,fundName,motivation} = req.body;
+    try {
+        const existingfundApplication = await fundApplications.findOne({fundName,userID});
+        if (existingfundApplication) {
+            return res.status(409).json({ message: 'Fund Applications already exists' });
+        }
+        await fundApplications.insertMany([req.body]);
       res.status(201).send({ message: 'Request created successfully'});
     } catch (error) {
       res.status(500).send({ message: 'Failed to create request', error: error.message });
