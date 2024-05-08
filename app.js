@@ -144,7 +144,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
     }
   });
-  app.get('/viewFundApplications/:userID', async (req, res) => {
+  app.get('/viewFundApplications/:managerUserID', async (req, res) => {
     const {managerUserID}=req.params;
     try {
       const requests = await fundApplications.find({managerUserID});
