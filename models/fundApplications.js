@@ -21,6 +21,11 @@ const fundApplicationSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true // Trims whitespace from the ends
+  },
+  applicationStatus:{
+    type: String,
+    required: true,
+    trim: true // Trims whitespace from the ends
   }
 
 

@@ -86,8 +86,8 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Failed to create request', error: error.message });
     }
   });
-  app.post('/AddFundApplications', async (req, res) => {
-    const { userID,managerUserID,fundName,motivation} = req.body;
+  app.post('/AddFundApplication', async (req, res) => {
+    const { userID,managerUserID,fundName,motivation,applicationStatus} = req.body;
     try {
         const existingfundApplication = await fundApplications.findOne({fundName,userID});
         if (existingfundApplication) {
