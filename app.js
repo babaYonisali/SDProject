@@ -173,6 +173,25 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Server error processing the request', error: error.message });
     }
   });
+  app.post('/process-fundApplication/:userID', async (req, res) => {
+    const { fundName,decision } = req.body;
+    const { userID } = req.params;  
+    try {
+        const updatedUser = await fundApplications.findOneAndUpdate(
+          { userID,fundName }, // Find by both userID and fundName
+          { $set: { applicationStatus: decision } }, // Update applicationStatus to 'accepted'
+          { new: true } // Return the updated document
+        );
+  
+        if (!updatedUser) {
+          return res.status(404).send({ message: 'User not found.' });
+        }
+        res.send({ message: `Application ${decision}.`, user: updatedUser });
+    
+    } catch (error) {
+      res.status(500).send({ message: 'Server error processing the request', error: error.message });
+    }
+  });
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
