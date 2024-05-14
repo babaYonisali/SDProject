@@ -149,7 +149,7 @@ app.post('/managerRequest', async (req, res) => {
   app.get('/viewFundApplications/:managerUserID', async (req, res) => {
     const {managerUserID}=req.params;
     try {
-      const requests = await fundApplications.find({managerUserID});
+      const requests = await PDF.find({managerUserID});
       res.status(200).send(requests);
     } catch (error) {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
@@ -179,7 +179,7 @@ app.post('/managerRequest', async (req, res) => {
     const { fundName,decision } = req.body;
     const { userID } = req.params;  
     try {
-        const updatedUser = await fundApplications.findOneAndUpdate(
+        const updatedUser = await PDF.findOneAndUpdate(
           { userID,fundName }, // Find by both userID and fundName
           { $set: { applicationStatus: decision } }, // Update applicationStatus to 'accepted'
           { new: true } // Return the updated document
