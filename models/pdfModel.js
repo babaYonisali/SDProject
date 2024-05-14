@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
-const { Schema } = mongoose;
 
-const pdfSchema = new Schema({
-    userID: { type: String, 
-              required: true },
-    fundName: { type: String,
-               required: true },
+const pdfSchema = new mongoose.Schema({
+    userID: { 
+        type: String, 
+        required: true },
+    fundName: { 
+        type: String,
+        required: true },
     pdf: {
-        data: Buffer,
-        contentType: String,
-        required: true,
+        data: { type: Buffer, required: true },
+        contentType: { type: String, required: true },
     }
 });
 
