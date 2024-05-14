@@ -6,6 +6,8 @@ const User=require("./models/userModel")
 const funds=require("./models/funds")
 const fundApplications=require("./models/fundApplications")
 const managerRequest=require("./models/managerRequestModel")
+const PDF=require("./models/pdfModel")
+const multer=require('multer')
 connectDB();
 const path = require('path');
 const {expressjwt:jwt}=require('express-jwt')
@@ -192,6 +194,39 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Server error processing the request', error: error.message });
     }
   });
+
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// Define the POST route for uploading a PDF
+app.post('/uploadPDF', upload.single('pdf'), async (req, res) => {
+    try {
+        const { userID, fundName } = req.body;
+
+        // Check if file is uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+
+        // Create a new PDF document
+        const newPDF = new PDF({
+            userID: userID,
+            fundName: fundName,
+            pdf: {
+                data: req.file.buffer,
+                contentType: req.file.mimetype,
+            },
+        });
+
+        // Save the PDF to the database
+        await newPDF.save();
+
+        res.status(201).json({ message: 'PDF uploaded successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to upload PDF', error: error.message });
+    }
+});
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
