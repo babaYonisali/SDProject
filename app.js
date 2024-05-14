@@ -202,7 +202,7 @@ const upload = multer({ storage: storage });
 // Define the POST route for uploading a PDF
 app.post('/uploadPDF', upload.single('pdf'), async (req, res) => {
     try {
-        const { userID, fundName } = req.body;
+        const { userID, fundName, } = req.body;
         const existingPDF = await PDF.findOne({fundName,userID});
         if (existingPDF) {
             return res.status(409).json({ message: 'PDF already exists' });
