@@ -155,6 +155,15 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
     }
   });
+  app.get('/viewFundStatus/:userID', async (req, res) => {
+    const {userID}=req.params;
+    try {
+      const requests = await PDF.find({userID});
+      res.status(200).send(requests);
+    } catch (error) {
+      res.status(500).send({ message: "Failed to fetch funds", error: error.message });
+    }
+  });
   app.get('/viewUsers', async (req, res) => {
     try {
       const requests = await User.find({});
