@@ -246,19 +246,30 @@ app.post('/updateFundAmount', async (req, res) => {
   const { fundName } = req.body;
 
   try {
-    // Find the fund and update the currentAmount
-    const updatedFund = await funds.findOneAndUpdate(
-      { fundName }, // Find the fund by name
-      { $inc: { currentAmount: -amountPerApplicant } }, // Decrement the currentAmount
-      { new: true } // Return the updated document
-    );
+    if (!fundName) {
+      return res.status(400).send({ message: 'Fund name is required.' });
+    }
 
-    if (!updatedFund) {
+    // Find the fund to get the amountPerApplicant
+    const fund = await funds.findOne({ fundName });
+
+    if (!fund) {
       return res.status(404).send({ message: 'Fund not found.' });
     }
 
+    // Calculate the new currentAmount
+    const newCurrentAmount = fund.currentAmount - fund.amountPerApplicant;
+
+    // Update the fund's currentAmount
+    const updatedFund = await funds.findOneAndUpdate(
+      { fundName },
+      { currentAmount: newCurrentAmount },
+      { new: true }
+    );
+
     res.send({ message: 'Fund amount updated successfully.', fund: updatedFund });
   } catch (error) {
+    console.error('Error updating fund amount:', error);
     res.status(500).send({ message: 'Failed to update fund amount', error: error.message });
   }
 });
