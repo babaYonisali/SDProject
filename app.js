@@ -242,6 +242,26 @@ app.post('/uploadPDF', upload.single('pdf'), async (req, res) => {
         res.status(500).json({ message: 'Failed to upload PDF', error: error.message });
     }
 });
+app.post('/updateFundAmount', async (req, res) => {
+  const { fundName } = req.body;
+
+  try {
+    // Find the fund and update the currentAmount
+    const updatedFund = await funds.findOneAndUpdate(
+      { fundName }, // Find the fund by name
+      { $inc: { currentAmount: -amountPerApplicant } }, // Decrement the currentAmount
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedFund) {
+      return res.status(404).send({ message: 'Fund not found.' });
+    }
+
+    res.send({ message: 'Fund amount updated successfully.', fund: updatedFund });
+  } catch (error) {
+    res.status(500).send({ message: 'Failed to update fund amount', error: error.message });
+  }
+});
 
 app.listen(PORT, ()=>{
     console.log(`Listening on port ${PORT}`)
