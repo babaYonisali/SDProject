@@ -25,6 +25,21 @@ const fundsSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true // Trims whitespace from the ends
+  },
+  totalAmount: {
+    type: Number,
+    required: true,
+    trim: true // Trims whitespace from the ends
+  },
+  amountPerApplicant: {
+    type: Number,
+    required: true,
+    trim: true // Trims whitespace from the ends
+  },
+  currentAmount: {
+    type:Number,
+    required: true,
+    trim: true // Trims whitespace from the ends
   }
 });
 
