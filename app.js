@@ -172,6 +172,16 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch requests", error: error.message });
     }
   });
+  app.get('/viewMyFunds/:userID', async (req, res) => {
+    const { userID } = req.params;
+    try {
+      const userFunds = await funds.find({ userID });
+      res.status(200).send(userFunds);
+    } catch (error) {
+      console.error('Error fetching user funds:', error);
+      res.status(500).send({ message: "Failed to fetch funds", error: error.message });
+    }
+  });
   app.get('/process-blockedUser/:userID', async (req, res) => {
     const { userID } = req.params;  
     try {
