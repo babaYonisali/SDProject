@@ -229,7 +229,7 @@ app.post('/managerRequest', async (req, res) => {
       // Prepare email content
       const message = {
         from: 'compsciwarriors@gmail.com',
-        to: user.email,
+        to: user.contact,
         subject: 'Fund Application Status',
         html:`<b>Your application for the fund "${fundName}" has been ${decision}.</b>`
       };
