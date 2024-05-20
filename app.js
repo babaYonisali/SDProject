@@ -8,6 +8,7 @@ const fundApplications=require("./models/fundApplications")
 const managerRequest=require("./models/managerRequestModel")
 const PDF=require("./models/pdfModel")
 const multer=require('multer')
+const nodemailer = require('nodemailer');
 connectDB();
 const path = require('path');
 const {expressjwt:jwt}=require('express-jwt')
@@ -35,6 +36,13 @@ const jwtCheck = jwt({
   });
   
  app.use(jwtCheck);
+ const transporter = nodemailer.createTransport({
+  service: 'gmail', // e.g., 'gmail'
+  auth: {
+    user: 'compsciwarriors@gmail.com',
+    pass: 'RohanChhika1234'
+  }
+});
 
 app.post('/login',async (req, res) => {
     const { userID } = req.body;
@@ -195,21 +203,48 @@ app.post('/managerRequest', async (req, res) => {
     }
   });
   app.post('/process-fundApplication/:userID', async (req, res) => {
-    const { fundName,decision } = req.body;
-    const { userID } = req.params;  
-    try {
-        const updatedUser = await PDF.findOneAndUpdate(
-          { userID,fundName }, // Find by both userID and fundName
-          { $set: { applicationStatus: decision } }, // Update applicationStatus to 'accepted'
-          { new: true } // Return the updated document
-        );
-  
-        if (!updatedUser) {
-          return res.status(404).send({ message: 'User not found.' });
-        }
-        res.send({ message: `Application ${decision}.`, user: updatedUser });
+    const { fundName, decision } = req.body;
+    const { userID } = req.params;
     
+    try {
+      // Find the user to get their email
+      const user = await User.findOne({ userID });
+      
+      if (!user) {
+        return res.status(404).send({ message: 'User not found.' });
+      }
+  
+      // Update the application status in the PDF collection
+      const updatedApplication = await PDF.findOneAndUpdate(
+        { userID, fundName },
+        { $set: { applicationStatus: decision } },
+        { new: true }
+      );
+  
+      if (!updatedApplication) {
+        return res.status(404).send({ message: 'Fund application not found.' });
+      }
+  
+      // Prepare email content
+      const mailOptions = {
+        from: 'compsciwarriors@gmail.com',
+        to: user.email,
+        subject: 'Fund Application Status',
+        text: `Your application for the fund "${fundName}" has been ${decision}.`
+      };
+  
+      // Send email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          return res.status(500).send({ message: 'Failed to send email', error: error.message });
+        }
+        console.log('Email sent:', info.response);
+      });
+  
+      res.send({ message: `Application ${decision}.`, user: updatedApplication });
     } catch (error) {
+      console.error('Server error processing the request:', error);
       res.status(500).send({ message: 'Server error processing the request', error: error.message });
     }
   });
