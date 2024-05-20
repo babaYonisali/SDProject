@@ -36,13 +36,6 @@ const jwtCheck = jwt({
   });
   
  app.use(jwtCheck);
- const transporter = nodemailer.createTransport({
-  service: 'gmail', // e.g., 'gmail'
-  auth: {
-    user: 'compsciwarriors@gmail.com',
-    pass: 'wdbs fewt gvhl qpne'
-  }
-});
 
 app.post('/login',async (req, res) => {
     const { userID } = req.body;
@@ -224,17 +217,25 @@ app.post('/managerRequest', async (req, res) => {
       if (!updatedApplication) {
         return res.status(404).send({ message: 'Fund application not found.' });
       }
+      const mailConfig ={
+        service: 'gmail', // e.g., 'gmail'
+        auth: {
+          user: 'compsciwarriors@gmail.com',
+          pass: 'wdbs fewt gvhl qpne'
+        }
+      };
+      const transporter=nodemailer.createTransport(mailConfig)
   
       // Prepare email content
-      const mailOptions = {
+      const message = {
         from: 'compsciwarriors@gmail.com',
         to: user.email,
         subject: 'Fund Application Status',
-        text: `Your application for the fund "${fundName}" has been ${decision}.`
+        html:`<b>Your application for the fund "${fundName}" has been ${decision}.</b>`
       };
   
       // Send email
-      transporter.sendMail(mailOptions, (error, info) => {
+      transporter.sendMail(message, (error, info) => {
         if (error) {
           console.error('Error sending email:', error);
           return res.status(500).send({ message: 'Failed to send email', error: error.message });
