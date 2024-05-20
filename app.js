@@ -40,7 +40,7 @@ const jwtCheck = jwt({
   service: 'gmail', // e.g., 'gmail'
   auth: {
     user: 'compsciwarriors@gmail.com',
-    pass: 'RohanChhika1234'
+    pass: 'Chhika1234'
   }
 });
 
