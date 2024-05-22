@@ -21,8 +21,10 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
   
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); 
+if (process.env.NODE_ENV !== 'test'){
+  app.use(cors(corsOptions));
+  app.options('*', cors(corsOptions));
+}
 const jwtCheck = jwt({
       secret: jwksRsa.expressJwtSecret({
       cache: true,
@@ -35,7 +37,9 @@ const jwtCheck = jwt({
     algorithms: ['RS256']
   });
   
- app.use(jwtCheck);
+  if (process.env.NODE_ENV !== 'test'){
+    app.use(jwtCheck);
+  }
 
 app.post('/login',async (req, res) => {
     const { userID } = req.body;
@@ -78,6 +82,11 @@ app.post('/managerRequest', async (req, res) => {
   });
   app.post('/AddFund', async (req, res) => {
     const { userID,fundName,companyName,funtType,description} = req.body;
+
+    if (!userID || !fundName || !companyName || !funtType || !description) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
     try {
         const existingfund = await funds.findOne({fundName});
         if (existingfund) {
@@ -91,6 +100,11 @@ app.post('/managerRequest', async (req, res) => {
   });
   app.post('/AddFundApplication', async (req, res) => {
     const { userID,managerUserID,fundName,motivation,applicationStatus} = req.body;
+
+    if (!userID || !managerUserID || !fundName || !motivation || !applicationStatus) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
     try {
         const existingfundApplication = await fundApplications.findOne({fundName,userID});
         if (existingfundApplication) {
@@ -106,6 +120,12 @@ app.post('/managerRequest', async (req, res) => {
     const { decision } = req.body;
     const { userID } = req.params;  
     try {
+
+      // Validate decision parameter
+      if (!['accept', 'reject'].includes(decision)) {
+        return res.status(400).send({ message: 'Invalid decision. Must be "accept" or "reject".' });
+      }
+
       // Find and delete the manager request for this user
       const request = await managerRequest.findOneAndDelete({ userID});
   
@@ -320,6 +340,11 @@ app.post('/updateFundAmount', async (req, res) => {
   }
 });
 
-app.listen(PORT, ()=>{
-    console.log(`Listening on port ${PORT}`)
-})
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+  });
+}
+
+
+module.exports = app;
