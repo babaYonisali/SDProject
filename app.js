@@ -15,12 +15,21 @@ const {expressjwt:jwt}=require('express-jwt')
 const jwksRsa=require('jwks-rsa')
 const cors= require('cors')
 app.use(express.json());
-
+const allowedOrigins = [
+  'https://brave-mushroom-0e83c5603.5.azurestaticapps.net',
+  'http://localhost:3000', // Add your local development URL here
+  'http://localhost:3001'  // If your local frontend runs on a different port, add it here
+];
 const corsOptions = {
-    origin: 'https://brave-mushroom-0e83c5603.5.azurestaticapps.net/', // Replace with your Azure Static Web Apps URL
-    optionsSuccessStatus: 200
+  origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin) || !origin) {
+          callback(null, true);
+      } else {
+          callback(new Error('Not allowed by CORS'));
+      }
+  },
+  optionsSuccessStatus: 200
 };
-  
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); 
 const jwtCheck = jwt({
