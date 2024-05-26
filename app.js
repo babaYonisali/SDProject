@@ -20,6 +20,7 @@ const allowedOrigins = [
   'http://localhost:3000', // Add your local development URL here
   'http://localhost:3001'  // If your local frontend runs on a different port, add it here
 ];
+//intilize cors
 const corsOptions = {
   origin: (origin, callback) => {
       if (allowedOrigins.includes(origin) || !origin) {
@@ -32,6 +33,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); 
+//getting jwt token from auth0
 const jwtCheck = jwt({
       secret: jwksRsa.expressJwtSecret({
       cache: true,
@@ -45,7 +47,7 @@ const jwtCheck = jwt({
   });
   
  app.use(jwtCheck);
-
+// retrieves user information from database
 app.post('/login',async (req, res) => {
     const { userID } = req.body;
     const user = await User.findOne({ userID });
@@ -54,7 +56,7 @@ app.post('/login',async (req, res) => {
     }
     res.json({role: user.role });
 });
-
+//adds user to the database if they have not been added already
 app.post('/signUp', async (req, res) => {
     const { userID, role, contact } = req.body;
 
@@ -72,6 +74,7 @@ app.post('/signUp', async (req, res) => {
         res.status(500).json({ message: 'Error adding user', error: error.message });
     }
 });
+//adds a request to managerRequest if an applicant applys to be a manager
 app.post('/managerRequest', async (req, res) => {
     const { userID,motivation} = req.body;
     try {
@@ -85,6 +88,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Failed to create request', error: error.message });
     }
   });
+  //fund manager adds a fund to the database
   app.post('/AddFund', async (req, res) => {
     const { userID,fundName,companyName,funtType,description} = req.body;
     try {
@@ -98,6 +102,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Failed to create request', error: error.message });
     }
   });
+  //applicant adds a fund application
   app.post('/AddFundApplication', async (req, res) => {
     const { userID,managerUserID,fundName,motivation,applicationStatus} = req.body;
     try {
@@ -111,6 +116,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Failed to create request', error: error.message });
     }
   });
+  //process the applicants request to become a manager
   app.post('/process-request/:userID', async (req, res) => {
     const { decision } = req.body;
     const { userID } = req.params;  
@@ -140,6 +146,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Server error processing the request', error: error.message });
     }
   });
+  //view all applicants request to become a fund manager
   app.get('/viewManagerRequests', async (req, res) => {
     try {
       const requests = await managerRequest.find({});
@@ -148,6 +155,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch requests", error: error.message });
     }
   });
+  //view all fund opportunities
   app.get('/viewFundOpps', async (req, res) => {
     try {
       const requests = await funds.find({});
@@ -156,6 +164,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
     }
   });
+  //view fund application for a certain manager
   app.get('/viewFundApplications/:managerUserID', async (req, res) => {
     const {managerUserID}=req.params;
     try {
@@ -165,6 +174,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
     }
   });
+  //for applicants to view the status of there applied funds 
   app.get('/viewFundStatus/:userID', async (req, res) => {
     const {userID}=req.params;
     try {
@@ -174,6 +184,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
     }
   });
+  //retreives all the users from the database
   app.get('/viewUsers', async (req, res) => {
     try {
       const requests = await User.find({});
@@ -182,6 +193,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch requests", error: error.message });
     }
   });
+  //view funds created by a specific manager
   app.get('/viewMyFunds/:userID', async (req, res) => {
     const { userID } = req.params;
     try {
@@ -192,6 +204,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: "Failed to fetch funds", error: error.message });
     }
   });
+  //for admin to block a user
   app.get('/process-blockedUser/:userID', async (req, res) => {
     const { userID } = req.params;  
     try {
@@ -204,6 +217,7 @@ app.post('/managerRequest', async (req, res) => {
       res.status(500).send({ message: 'Server error processing the request', error: error.message });
     }
   });
+  //a manager process the application for a fund made by an applicant ands sends the applicant an email with the decision
   app.post('/process-fundApplication/:userID', async (req, res) => {
     const { fundName, decision } = req.body;
     const { userID } = req.params;
@@ -263,7 +277,7 @@ app.post('/managerRequest', async (req, res) => {
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Define the POST route for uploading a PDF
+// Define the POST route for uploading a PDF and the rest of the applicants application
 app.post('/uploadPDF', upload.single('pdf'), async (req, res) => {
     try {
         const { userID, fundName,managerUserID,motivation,applicationStatus } = req.body;
@@ -297,6 +311,7 @@ app.post('/uploadPDF', upload.single('pdf'), async (req, res) => {
         res.status(500).json({ message: 'Failed to upload PDF', error: error.message });
     }
 });
+//updates the current amount of money in the system for a fund manager
 app.post('/updateFundAmount', async (req, res) => {
   const { fundName } = req.body;
 
